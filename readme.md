@@ -15,40 +15,96 @@ The function this.log() is implemented by default in the template router as a vi
 * Nothing
 
 ### Examples
+
+#### Demo Calls
+*#page/logging/action
+*#page/logging/admin
+*#page/logging/group
+
+#### Prototype view calls
 * action logs
 ```javascript
-this.log('action', 'user_door_open', {
-    auth_uid:      _.uid,
-    auth_uid_temp: _.uid_temp,
-    code:          2,
+this.log('action', 'scope', {
+    auth_uid:      1,
+    auth_uid_temp: 0,
+    code:          1234,
     data_obj:      {
-        door:  this.model.get('door_id')
+        logging_demo: 'this is a action logging demo'
     }
 });
 ```
 
 * admin logs
 ```javascript
-this.log('admin', 'app_fangate_open', {
-    log: {
-        app_fangate_show: ''
-    }
-});
+this.log('admin', 'scope', This is a admin logging demo. Value can be empty);
 ```
 
 * group logs
 ```javascript
-this.log('action', 'user_terminal_closed', {
-    auth_uid:      _.uid,
-    auth_uid_temp: _.uid_temp,
-    code:          2002,
-    data_obj: {
-        admin: {
-            app_end: ''
+this.log('group', {
+    'scope_acrion_demo1' : {
+        auth_uid:      1,
+        auth_uid_temp: 0,
+        code:          1234,
+        data_obj:      {
+            logging_demo: 'this is a action logging demo'
         }
+    },
+    'scope_acrion_demo2' : {
+        auth_uid:      1,
+        auth_uid_temp: 0,
+        code:          1234,
+        data_obj:      {
+            logging_demo: 'this is a action logging demo'
+        }
+    },
+    'scope_admin' : {
+        value: 'This is a admin logging demo. Value can be empty'
     }
 });
 ```
 
-### Load module with require
-Not needed. Its depended in the app_template by default.
+### Normal use over direct view call
+Normally not needed. Its depended in the app_template by default.
+
+* action logs
+```javascript
+logger.action('scope', {
+    auth_uid:      1,
+    auth_uid_temp: 0,
+    code:          1234,
+    data_obj:      {
+        logging_demo: 'this is a action logging demo'
+    }
+});
+```
+
+* admin logs
+```javascript
+logger.admin('scope', 'This is a admin logging demo. Value can be empty');
+```
+
+* group logs
+```javascript
+logger.group({
+    'scope_acrion_demo1' : {
+        auth_uid:      1,
+        auth_uid_temp: 0,
+        code:          1234,
+        data_obj:      {
+            logging_demo: 'this is a action logging demo'
+        }
+    },
+    'scope_acrion_demo2' : {
+        auth_uid:      1,
+        auth_uid_temp: 0,
+        code:          1234,
+        data_obj:      {
+            logging_demo: 'this is a action logging demo'
+        }
+    },
+    'scope_admin' : {
+        value: 'This is a admin logging demo. Value can be empty'
+    }
+});
+```
