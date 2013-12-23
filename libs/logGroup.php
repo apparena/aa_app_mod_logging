@@ -44,6 +44,9 @@ try
         }
     }
 
+    // update all user data entries, if uid is higher than 0
+    $log->updateUserId();
+
     // generate return
     $status = $log->getStatusMessage();
     if ($status->successCount > 0)

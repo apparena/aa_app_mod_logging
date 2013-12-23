@@ -42,23 +42,7 @@ try
     }
 
     // update all user data entries, if uid is higher than 0
-    /*if ($uid > 0)
-    {
-        $sql  = "UPDATE
-                mod_log_user
-            SET
-                auth_uid = :auth_uid
-            WHERE
-                aa_inst_id = :aa_inst_id
-            AND auth_uid = 0
-            AND auth_uid_temp = :auth_uid_temp
-            ";
-        $stmt = $db->prepare($sql);
-        $stmt->bindParam(':auth_uid', $uid, PDO::PARAM_INT);
-        $stmt->bindParam(':auth_uid_temp', $uid_temp, PDO::PARAM_STR, 32);
-        $stmt->bindParam(':aa_inst_id', $aa_inst_id, PDO::PARAM_STR);
-        $stmt->execute();
-    }*/
+    $log->updateUserId();
 }
 catch (Exception $e)
 {

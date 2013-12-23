@@ -20,19 +20,59 @@ use \com\apparena\system\Database AS DB;
 
 class Log
 {
+    /**
+     * @var array
+     */
     protected $_logging_data = array();
+    /**
+     * @var null
+     */
     protected $_scope = null;
+    /**
+     * @var null
+     */
     protected $_code = null;
+    /**
+     * @var null
+     */
     protected $_aa_inst_id = null;
+    /**
+     * @var string
+     */
     protected $_user_agent_hash = '';
+    /**
+     * @var int
+     */
     protected $_user_agent_id = 0;
+    /**
+     * @var int
+     */
     protected $_uid = 0;
+    /**
+     * @var int
+     */
     protected $_uid_temp = 0;
+    /**
+     * @var \com\apparena\system\Database|null
+     */
     protected $_db = null;
+    /**
+     * @var \DateTime|null
+     */
     protected $_current_time = null;
+    /**
+     * @var array
+     */
     protected $_status_message = array('error' => array(), 'success' => array());
+    /**
+     * @var null
+     */
     protected $_log_statement = null;
 
+    /**
+     * @param DB        $db
+     * @param \DateTime $currentTime
+     */
     public function __construct(DB $db, \DateTime $currentTime)
     {
         $this->_db           = $db;
@@ -40,7 +80,9 @@ class Log
     }
 
     /**
-     * @param int $aa_inst_id
+     * @param $aa_inst_id
+     *
+     * @return $this
      */
     public function setAaInstId($aa_inst_id)
     {
@@ -50,7 +92,7 @@ class Log
     }
 
     /**
-     * @return null|int
+     * @return null
      */
     public function getAaInstId()
     {
@@ -58,7 +100,9 @@ class Log
     }
 
     /**
-     * @param null $code
+     * @param $code
+     *
+     * @return $this
      */
     public function setCode($code)
     {
@@ -76,7 +120,9 @@ class Log
     }
 
     /**
-     * @param array $logging_data
+     * @param $logging_data
+     *
+     * @return $this
      */
     public function setLoggingData($logging_data)
     {
@@ -94,7 +140,9 @@ class Log
     }
 
     /**
-     * @param null $scope
+     * @param $scope
+     *
+     * @return $this
      */
     public function setScope($scope)
     {
@@ -112,7 +160,9 @@ class Log
     }
 
     /**
-     * @param int $uid
+     * @param $uid
+     *
+     * @return $this
      */
     public function setUid($uid)
     {
@@ -130,7 +180,9 @@ class Log
     }
 
     /**
-     * @param int $uid_temp
+     * @param $uid_temp
+     *
+     * @return $this
      */
     public function setUidTemp($uid_temp)
     {
@@ -148,7 +200,9 @@ class Log
     }
 
     /**
-     * @param string $user_agent_hash
+     * @param $user_agent_hash
+     *
+     * @return $this
      */
     public function setUserAgentHash($user_agent_hash)
     {
@@ -170,6 +224,9 @@ class Log
         return md5($this->_user_agent_hash);
     }
 
+    /**
+     * @return $this
+     */
     public function generateUserAgentId()
     {
         $hash  = $this->getUserAgentHash();
@@ -188,6 +245,12 @@ class Log
         return $this;
     }
 
+    /**
+     * @param $user_agent_id
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function setUserAgentId($user_agent_id)
     {
         if (!is_numeric($user_agent_id))
@@ -200,7 +263,7 @@ class Log
     }
 
     /**
-     * @return string
+     * @return int
      */
     public function getUserAgentId()
     {
@@ -242,6 +305,11 @@ class Log
         return trim(strtolower($_SERVER['HTTP_USER_AGENT']));
     }
 
+    /**
+     * @param $type
+     *
+     * @return $this
+     */
     public function log($type)
     {
         switch (strtolower($type))
@@ -257,6 +325,9 @@ class Log
         return $this;
     }
 
+    /**
+     *
+     */
     protected function defineLogAdminStatement()
     {
         // set log type to action
@@ -279,6 +350,9 @@ class Log
         $this->_log_statement = $this->_db->prepare($sql);
     }
 
+    /**
+     *
+     */
     protected function defineLogActionStatement()
     {
         // set log type to action
@@ -302,6 +376,9 @@ class Log
         $this->_log_statement = $this->_db->prepare($sql);
     }
 
+    /**
+     *
+     */
     protected function logAction()
     {
         if ($this->_log_statement === null || $this->_log_statement !== 'action')
@@ -344,6 +421,12 @@ class Log
         }
     }
 
+    /**
+     * @param $status_message
+     * @param $type
+     *
+     * @return $this
+     */
     public function setStatusMessage($status_message, $type)
     {
         $this->_status_message[$type][] = $status_message;
@@ -351,6 +434,9 @@ class Log
         return $this;
     }
 
+    /**
+     * @return object
+     */
     public function getStatusMessage()
     {
         $return = (object)$this->_status_message;
@@ -359,6 +445,9 @@ class Log
         return $return;
     }
 
+    /**
+     * @return $this
+     */
     protected function logAdmin()
     {
         if ($this->_log_statement === null || $this->_log_statement !== 'admin')
@@ -394,6 +483,29 @@ class Log
             $this->setStatusMessage($e->getMessage(), 'error');
         }
 
+        return $this;
+    }
+
+    /**
+     * @return $this|bool
+     */
+    public function updateUserId()
+    {
+        if($this->getUid() === 0)
+        {
+            return false;
+        }
+
+        $sql = "UPDATE
+                    mod_log_user
+                SET
+                    auth_uid = " . $this->_db->quote($this->getUid()) . "
+                WHERE
+                    aa_inst_id = " . $this->_db->quote($this->getAaInstId()) . "
+                AND auth_uid = 0
+                AND auth_uid_temp = " . $this->_db->quote($this->getUidTemp()) . "
+                ";
+        $this->_db->query($sql);
         return $this;
     }
 }
