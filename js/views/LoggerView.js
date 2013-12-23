@@ -5,42 +5,80 @@ define([
 ], function ($, _, Backbone) {
     'use strict';
 
-    var LoggerView = Backbone.View.extend({
+    var namespace = 'logging',
+        View, Init, Remove, Instance;
+
+    View = Backbone.View.extend({
 
         initialize: function () {
-            _.bindAll(this, 'action', 'agent', 'admin');
+            _.bindAll(this, 'action', 'admin', 'group');
         },
 
-        action: function (data) {
+        action: function (scope, data) {
             var request = {
                 action: 'logAction',
-                data:   data
+                data:   {
+                    scope: scope,
+                    data:  data
+                }
             };
 
             this.save(request);
         },
 
-        agent: function () {
-            var request = {
-                action: 'logAgent'
-            };
-            this.save(request);
-        },
-
-        admin: function (data) {
+        admin: function (scope, value) {
             var request = {
                 action: 'logAdmin',
+                data:   {
+                    scope: scope,
+                    value: value
+                }
+            };
+            this.save(request);
+        },
+
+        group: function (data) {
+            var request = {
+                action: 'logGroup',
                 data:   data
             };
             this.save(request);
         },
 
         save: function (request) {
-            //_.debug.log('log', request.data.scope, request.action);
             request.module = 'logging';
             this.ajax(request, true);
         }
     });
 
-    return LoggerView;
+    Remove = function () {
+        _.singleton.view[namespace].unbind().remove();
+        delete _.singleton.view[namespace];
+    };
+
+    Init = function (init) {
+
+        if (_.isUndefined(_.singleton.view[namespace])) {
+            _.singleton.view[namespace] = new View();
+        } else {
+            if (!_.isUndefined(init) && init === true) {
+                Remove();
+                _.singleton.view[namespace] = new View();
+            }
+        }
+
+        return _.singleton.view[namespace];
+    };
+
+    Instance = function () {
+        return _.singleton.view[namespace];
+    };
+
+    return {
+        init:        Init,
+        view:        View,
+        remove:      Remove,
+        namespace:   namespace,
+        getInstance: Instance
+    };
 });

@@ -18,17 +18,48 @@ try
     $data = (object)$_POST['data'];
 
     $log = new \com\apparena\modules\logging\Log($db, $current_date);
-    $log->setAaInstId($aa_inst_id)
-        ->setScope($data->scope)
-        ->setLoggingData($data->value)
-        ->log('admin');
 
+    foreach($data AS $scope => $value)
+    {
+        if(is_array($value))
+        {
+            // log action
+            $obj = (object)$value;
+
+            $log->setAaInstId($aa_inst_id)
+                ->setScope($scope)
+                ->setCode($obj->code)
+                ->setUid($obj->auth_uid)
+                ->setUidTemp($obj->auth_uid_temp)
+                ->setLoggingData($obj->data_obj)
+                ->log('action');
+        }
+        else
+        {
+            // log admin action
+            $log->setAaInstId($aa_inst_id)
+                ->setScope($scope)
+                ->setLoggingData($value)
+                ->log('admin');
+        }
+    }
+
+    // generate return
     $status = $log->getStatusMessage();
-    if ($status->errorCount === 0)
+    if ($status->successCount > 0)
     {
         $return['code']    = 200;
         $return['status']  = 'success';
-        $return['message'] = 'added ' . implode(', ', $status->success);
+    }
+    $return['message'] = 'Successes: ' . implode(', ', $status->success);
+
+    if ($status->errorCount > 0)
+    {
+        if ($status->successCount > 0)
+        {
+            $return['message'] .= ', ';
+        }
+        $return['message'] .= 'Error: ' . implode(', ', $status->error);
     }
 }
 catch (Exception $e)
