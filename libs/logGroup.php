@@ -26,6 +26,11 @@ try
             // log action
             $obj = (object)$value;
 
+            if(empty($obj->data_obj))
+            {
+                $obj->data_obj = json_encode(array());
+            }
+
             $log->setAaInstId($aa_inst_id)
                 ->setScope($scope)
                 ->setCode($obj->code)
