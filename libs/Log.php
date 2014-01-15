@@ -35,7 +35,7 @@ class Log
     /**
      * @var null
      */
-    protected $_aa_inst_id = null;
+    protected $_i_id = null;
     /**
      * @var string
      */
@@ -80,13 +80,13 @@ class Log
     }
 
     /**
-     * @param $aa_inst_id
+     * @param $i_id
      *
      * @return $this
      */
-    public function setAaInstId($aa_inst_id)
+    public function setAaInstId($i_id)
     {
-        $this->_aa_inst_id = $aa_inst_id;
+        $this->_i_id = $i_id;
 
         return $this;
     }
@@ -96,7 +96,7 @@ class Log
      */
     public function getAaInstId()
     {
-        return $this->_aa_inst_id;
+        return $this->_i_id;
     }
 
     /**
@@ -339,7 +339,7 @@ class Log
             SET
                 hash= :hash,
                 scope = :scope,
-                aa_inst_id = :aa_inst_id,
+                i_id = :i_id,
                 value = :value,
                 date_added = FROM_UNIXTIME(:date_added),
                 counter = 1
@@ -364,7 +364,7 @@ class Log
             SET
                 auth_uid = :auth_uid,
                 auth_uid_temp = :auth_uid_temp,
-                aa_inst_id = :aa_inst_id,
+                i_id = :i_id,
                 data = :data,
                 scope = :scope,
                 code = :status_code,
@@ -388,7 +388,7 @@ class Log
 
         // define basic variables
         $timestamp  = $this->_current_time->getTimestamp();
-        $aa_inst_id = $this->getAaInstId();
+        $i_id = $this->getAaInstId();
         $uid        = $this->getUid();
         $uid_temp   = $this->getUidTemp();
         $scope      = $this->getScope();
@@ -398,7 +398,7 @@ class Log
         $agent_id   = $this->getUserAgentId();
 
         // bind variables to database statement
-        $this->_log_statement->bindParam(':aa_inst_id', $aa_inst_id, \PDO::PARAM_STR);
+        $this->_log_statement->bindParam(':i_id', $i_id, \PDO::PARAM_STR);
         $this->_log_statement->bindParam(':date_added', $timestamp, \PDO::PARAM_STR);
         $this->_log_statement->bindParam(':scope', $scope, \PDO::PARAM_STR);
         $this->_log_statement->bindParam(':data', $value, \PDO::PARAM_STR);
@@ -459,14 +459,14 @@ class Log
 
         // define basic variables
         $timestamp  = $this->_current_time->getTimestamp();
-        $aa_inst_id = $this->getAaInstId();
+        $i_id = $this->getAaInstId();
         $scope      = $this->getScope();
         $value      = $this->getLoggingData();
-        $hash       = md5($aa_inst_id . $timestamp . $scope . $value);
+        $hash       = md5($i_id . $timestamp . $scope . $value);
 
         // bind variables to database statement
         $this->_log_statement->bindParam(':hash', $hash, \PDO::PARAM_STR, 32);
-        $this->_log_statement->bindParam(':aa_inst_id', $aa_inst_id, \PDO::PARAM_STR);
+        $this->_log_statement->bindParam(':i_id', $i_id, \PDO::PARAM_STR);
         $this->_log_statement->bindParam(':date_added', $timestamp, \PDO::PARAM_STR);
         $this->_log_statement->bindParam(':scope', $scope, \PDO::PARAM_STR);
         $this->_log_statement->bindParam(':value', $value, \PDO::PARAM_STR);
@@ -501,7 +501,7 @@ class Log
                 SET
                     auth_uid = " . $this->_db->quote($this->getUid()) . "
                 WHERE
-                    aa_inst_id = " . $this->_db->quote($this->getAaInstId()) . "
+                    i_id = " . $this->_db->quote($this->getAaInstId()) . "
                 AND auth_uid = 0
                 AND auth_uid_temp = " . $this->_db->quote($this->getUidTemp()) . "
                 ";
