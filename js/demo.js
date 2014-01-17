@@ -1,7 +1,7 @@
 define([
     'jquery',
     'underscore',
-    'modules/logging/js/views/LoggerView'
+    'modules/aa_app_mod_logging/js/views/LoggerView'
 ], function ($, _, Logger) {
     'use strict';
 
