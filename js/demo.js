@@ -6,7 +6,7 @@ define([
     'use strict';
 
     return function (type) {
-        var logger = Logger.init();
+        var logger = Logger().init();
 
         switch (type) {
             case 'action':

@@ -5,11 +5,11 @@ include_once('Log.php');
 
 try
 {
-    if (empty($_POST['aa_inst_id']))
+    if (empty($_POST['i_id']))
     {
-        throw new \Exception('aa_inst_id was not sent by request in ' . __FILE__);
+        throw new \Exception('i_id was not sent by request in ' . __FILE__);
     }
-    $aa_inst_id = $_POST['aa_inst_id'];
+    $i_id = $_POST['i_id'];
 
     if (empty($_POST['data']) && !is_array($_POST['data']))
     {
@@ -31,7 +31,7 @@ try
                 $obj->data_obj = json_encode(array());
             }
 
-            $log->setAaInstId($aa_inst_id)
+            $log->setAaInstId($i_id)
                 ->setScope($scope)
                 ->setCode($obj->code)
                 ->setUid($obj->auth_uid)
@@ -42,7 +42,7 @@ try
         else
         {
             // log admin action
-            $log->setAaInstId($aa_inst_id)
+            $log->setAaInstId($i_id)
                 ->setScope($scope)
                 ->setLoggingData($value)
                 ->log('admin');

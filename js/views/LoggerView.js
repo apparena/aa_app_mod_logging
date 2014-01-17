@@ -1,84 +1,57 @@
 define([
+    'ViewExtend',
     'jquery',
     'underscore',
     'backbone'
-], function ($, _, Backbone) {
+], function (View, $, _, Backbone) {
     'use strict';
 
-    var namespace = 'logging',
-        View, Init, Remove, Instance;
+    return function () {
+        View.namespace = 'logging';
 
-    View = Backbone.View.extend({
+        View.code = Backbone.View.extend({
 
-        initialize: function () {
-            _.bindAll(this, 'action', 'admin', 'group');
-        },
+            initialize: function () {
+                _.bindAll(this, 'action', 'admin', 'group');
+            },
 
-        action: function (scope, data) {
-            var request = {
-                action: 'logAction',
-                data:   {
-                    scope: scope,
-                    data:  data
-                }
-            };
+            action: function (scope, data) {
+                var request = {
+                    action: 'logAction',
+                    data:   {
+                        scope: scope,
+                        data:  data
+                    }
+                };
 
-            this.save(request);
-        },
+                this.save(request);
+            },
 
-        admin: function (scope, value) {
-            var request = {
-                action: 'logAdmin',
-                data:   {
-                    scope: scope,
-                    value: value
-                }
-            };
-            this.save(request);
-        },
+            admin: function (scope, value) {
+                var request = {
+                    action: 'logAdmin',
+                    data:   {
+                        scope: scope,
+                        value: value
+                    }
+                };
+                this.save(request);
+            },
 
-        group: function (data) {
-            var request = {
-                action: 'logGroup',
-                data:   data
-            };
-            this.save(request);
-        },
+            group: function (data) {
+                var request = {
+                    action: 'logGroup',
+                    data:   data
+                };
+                this.save(request);
+            },
 
-        save: function (request) {
-            request.module = 'logging';
-            this.ajax(request, true);
-        }
-    });
-
-    Remove = function () {
-        _.singleton.view[namespace].unbind().remove();
-        delete _.singleton.view[namespace];
-    };
-
-    Init = function (init) {
-
-        if (_.isUndefined(_.singleton.view[namespace])) {
-            _.singleton.view[namespace] = new View();
-        } else {
-            if (!_.isUndefined(init) && init === true) {
-                Remove();
-                _.singleton.view[namespace] = new View();
+            save: function (request) {
+                request.module = 'logging';
+                this.ajax(request, true);
             }
-        }
+        });
 
-        return _.singleton.view[namespace];
-    };
-
-    Instance = function () {
-        return _.singleton.view[namespace];
-    };
-
-    return {
-        init:        Init,
-        view:        View,
-        remove:      Remove,
-        namespace:   namespace,
-        getInstance: Instance
-    };
+        return View;
+    }
 });
