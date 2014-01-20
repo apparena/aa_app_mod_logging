@@ -47,7 +47,7 @@ define([
             },
 
             save: function (request) {
-                request.module = 'logging';
+                request.module = 'aa_app_mod_logging';
                 this.ajax(request, true);
             }
         });
