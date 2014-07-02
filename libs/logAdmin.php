@@ -17,7 +17,7 @@ try
     }
     $data = (object)$_POST['data'];
 
-    $log = new \com\apparena\modules\logging\Log($db, $current_date);
+    $log = new \Apparena\Modules\Logging\Log($db, $current_date);
     $log->setAaInstId($i_id)
         ->setScope($data->scope)
         ->setLoggingData($data->value)

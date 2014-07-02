@@ -10,7 +10,7 @@ define([
 
         switch (type) {
             case 'action':
-                logger.action('scope', {
+                logger.action('scope_name', {
                     auth_uid:      1,
                     auth_uid_temp: 0,
                     code:          1234,
@@ -21,7 +21,7 @@ define([
                 break;
 
             case 'admin':
-                logger.admin('scope', 'This is a admin logging demo. Value can be empty');
+                logger.admin('scope_name', 'This is a admin logging demo. Value can be empty');
                 break;
 
             case 'group':
@@ -44,7 +44,7 @@ define([
                         }
                     },
 
-                    'scope_admin': 'This is a admin logging demo. Value can be empty'
+                    'scope_admin_name': 'This is a admin logging demo. Value can be empty'
                 });
                 break;
         }
