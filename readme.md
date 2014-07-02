@@ -18,6 +18,14 @@ The function this.log() is implemented by default in the template router as a vi
 * **admin** - to log admin thinks
 * **group** - to log many actions and admin thinks in one request
 
+### Function parameter
+#### this.log(Type, Scope, {Options})
+| Key | Type | Description |
+|--------|--------|--------|
+| type | string | log type, use admin/action/agent/group |
+| scope | string | scopename for you log, define what you want |
+| data | object | params as JSON object with basic structure auth_uid [only on action logs] int (User ID) auth_uid_temp [only on action logs] int (Temporary user ID if user ID not exist. Later, if user ID is not zero, all user ID's with the same temporary user ID's will be changed to the right user ID.) code [only on action logs] int (scope or status code) log [only on admin logs] json (Only with one parameter, scope as key and a value that will be stored. If the scope exist, it will be count one up) data_obj json (Additional thinks to log. Here you are free to add key/value pairs. If you add the key admin, you can set them an JSON string like the "log" parameter. With this combination, you can safe a action and a admin log in one request.) |
+
 ### Examples
 #### Demo Calls
 * \#page/logging/action
