@@ -14,11 +14,11 @@
  * @license     http://www.marcusmerchel.de/licence/
  * @version     1.0.0 (23.12.13 - 18:20)
  */
-namespace com\apparena\modules\logging;
+namespace Apparena\Modules\Logging;
 
-use \com\apparena\system\Database AS DB;
+use \Apparena\Systems\Database AS DB;
 
-class Log
+class Log extends \Slim\Slim
 {
     /**
      * @var array
@@ -68,6 +68,10 @@ class Log
      * @var null
      */
     protected $_log_statement = null;
+    /**
+     * @var \Slim\Http\Request
+     */
+    protected $_request;
 
     /**
      * @param DB        $db
@@ -77,6 +81,9 @@ class Log
     {
         $this->_db           = $db;
         $this->_current_time = clone $currentTime;
+
+        $env            = \Slim\Environment::getInstance();
+        $this->_request = new \Slim\Http\Request($env);
     }
 
     /**
@@ -335,17 +342,17 @@ class Log
 
         // prepare new logging entry
         $sql = "INSERT INTO
-                mod_log_adminpanel
-            SET
-                hash= :hash,
-                scope = :scope,
-                i_id = :i_id,
-                value = :value,
-                date_added = FROM_UNIXTIME(:date_added),
-                counter = 1
-            ON DUPLICATE KEY UPDATE
-                counter = counter+1
-            ";
+                    mod_log_adminpanel
+                SET
+                    hash= :hash,
+                    scope = :scope,
+                    i_id = :i_id,
+                    value = :value,
+                    date_added = :date_added,
+                    counter = 1
+                ON DUPLICATE KEY UPDATE
+                    counter = counter+1
+                ";
 
         $this->_log_statement = $this->_db->prepare($sql);
     }
@@ -360,18 +367,18 @@ class Log
 
         // prepare new logging entry
         $sql = "INSERT INTO
-                mod_log_user
-            SET
-                auth_uid = :auth_uid,
-                auth_uid_temp = :auth_uid_temp,
-                i_id = :i_id,
-                data = :data,
-                scope = :scope,
-                code = :status_code,
-                agend_id = :agend_id,
-                ip = INET_ATON(:ip),
-                date_added = FROM_UNIXTIME(:date_added)
-            ";
+                    mod_log_user
+                SET
+                    auth_uid = :auth_uid,
+                    auth_uid_temp = :auth_uid_temp,
+                    i_id = :i_id,
+                    data = :data,
+                    scope = :scope,
+                    code = :status_code,
+                    agend_id = :agend_id,
+                    ip = INET_ATON(:ip),
+                    date_added = :date_added
+                ";
 
         $this->_log_statement = $this->_db->prepare($sql);
     }
@@ -387,15 +394,15 @@ class Log
         }
 
         // define basic variables
-        $timestamp  = $this->_current_time->getTimestamp();
-        $i_id = $this->getAaInstId();
-        $uid        = $this->getUid();
-        $uid_temp   = $this->getUidTemp();
-        $scope      = $this->getScope();
-        $value      = json_encode($this->getLoggingData());
-        $code       = $this->getCode();
-        $ip         = get_client_ip();
-        $agent_id   = $this->getUserAgentId();
+        $timestamp = $this->_current_time->format('Y-m-d H:i.s');
+        $i_id      = $this->getAaInstId();
+        $uid       = $this->getUid();
+        $uid_temp  = $this->getUidTemp();
+        $scope     = $this->getScope();
+        $value     = json_encode($this->getLoggingData());
+        $code      = $this->getCode();
+        $ip        = $this->_request->getIp();
+        $agent_id  = $this->getUserAgentId();
 
         // bind variables to database statement
         $this->_log_statement->bindParam(':i_id', $i_id, \PDO::PARAM_STR);
@@ -439,9 +446,10 @@ class Log
      */
     public function getStatusMessage()
     {
-        $return = (object)$this->_status_message;
-        $return->errorCount = count($return->error);
+        $return               = (object)$this->_status_message;
+        $return->errorCount   = count($return->error);
         $return->successCount = count($return->success);
+
         return $return;
     }
 
@@ -455,14 +463,14 @@ class Log
             $this->defineLogAdminStatement();
         }
         // modify time of day
-        $this->_current_time->setTime(0, 0, 0);
+        $this->_current_time->setTime(0, 0);
 
         // define basic variables
-        $timestamp  = $this->_current_time->getTimestamp();
-        $i_id = $this->getAaInstId();
-        $scope      = $this->getScope();
-        $value      = $this->getLoggingData();
-        $hash       = md5($i_id . $timestamp . $scope . $value);
+        $timestamp = $this->_current_time->format('Y-m-d H:i.s');
+        $i_id      = $this->getAaInstId();
+        $scope     = $this->getScope();
+        $value     = $this->getLoggingData();
+        $hash      = md5($i_id . $timestamp . $scope . $value);
 
         // bind variables to database statement
         $this->_log_statement->bindParam(':hash', $hash, \PDO::PARAM_STR, 32);
@@ -491,7 +499,7 @@ class Log
      */
     public function updateUserId()
     {
-        if($this->getUid() === 0)
+        if ($this->getUid() === 0)
         {
             return false;
         }
@@ -506,6 +514,7 @@ class Log
                 AND auth_uid_temp = " . $this->_db->quote($this->getUidTemp()) . "
                 ";
         $this->_db->query($sql);
+
         return $this;
     }
 }

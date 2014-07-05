@@ -21,10 +21,10 @@ try
 
     if (!isset($obj->auth_uid) || !isset($obj->data_obj) || !isset($obj->scope))
     {
-        throw new \Exception('needet data keys not exists (auth_uid, data_obj, action) in ' . __FILE__);
+        throw new \Exception('needed data keys not exists (auth_uid, data_obj, action) in ' . __FILE__);
     }
 
-    $log = new \com\apparena\modules\logging\Log($db, $current_date);
+    $log = new \Apparena\Modules\Logging\Log($db, $current_date);
     $log->setAaInstId($i_id)
         ->setScope($obj->scope)
         ->setCode($obj->code)
